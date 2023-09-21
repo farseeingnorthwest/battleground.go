@@ -17,7 +17,7 @@ import (
 
 func TestSkillController_GetSkills(t *testing.T) {
 	r := new(mockSkillRepository)
-	r.On("Find", mock.Anything).Return([]storage.Skill{
+	r.On("Find").Return([]storage.Skill{
 		{
 			ID:      1,
 			Name:    "Normal Attack",
@@ -114,8 +114,8 @@ type mockSkillRepository struct {
 	mock.Mock
 }
 
-func (r *mockSkillRepository) Find(query *storage.SkillQuery) ([]storage.Skill, error) {
-	args := r.Called(query)
+func (r *mockSkillRepository) Find() ([]storage.Skill, error) {
+	args := r.Called()
 	return args.Get(0).([]storage.Skill), args.Error(1)
 }
 

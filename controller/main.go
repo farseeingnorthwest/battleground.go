@@ -9,6 +9,11 @@ var Module = fx.Module(
 	"controller",
 	fx.Provide(
 		fx.Annotate(
+			NewCharacterController,
+			fx.As(new(Controller)),
+			fx.ResultTags(`group:"controllers"`),
+		),
+		fx.Annotate(
 			NewSkillController,
 			fx.As(new(Controller)),
 			fx.ResultTags(`group:"controllers"`),

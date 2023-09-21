@@ -4,8 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-	"strconv"
-	"strings"
 
 	"github.com/farseeingnorthwest/playground/battlefield/v2"
 	"github.com/jmoiron/sqlx"
@@ -46,49 +44,8 @@ func NewSkillRepository(db *sqlx.DB) *SkillRepository {
 	return &SkillRepository{db: db}
 }
 
-type SkillQuery struct {
-	order  string
-	limit  string
-	offset string
-}
-
-func (q *SkillQuery) OrderBy(asc bool) *SkillQuery {
-	if asc {
-		q.order = "ORDER BY id ASC"
-	} else {
-		q.order = "ORDER BY id DESC"
-	}
-
-	return q
-}
-
-func (q *SkillQuery) Limit(limit int) *SkillQuery {
-	q.limit = "LIMIT " + strconv.Itoa(limit)
-	return q
-}
-
-func (q *SkillQuery) Offset(offset int) *SkillQuery {
-	q.offset = "OFFSET " + strconv.Itoa(offset)
-	return q
-}
-
-func (q *SkillQuery) Select() (string, []any) {
-	qs := strings.Join(
-		[]string{
-			"SELECT * FROM skills ORDER BY id",
-			q.order,
-			q.limit,
-			q.offset,
-		},
-		" ",
-	)
-
-	return qs, nil
-}
-
-func (r SkillRepository) Find(query *SkillQuery) (skills []Skill, err error) {
-	qs, args := query.Select()
-	err = r.db.Select(&skills, qs, args...)
+func (r SkillRepository) Find() (skills []Skill, err error) {
+	err = r.db.Select(&skills, "SELECT * FROM skills ORDER BY ID")
 	return
 }
 

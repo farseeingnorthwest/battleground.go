@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSkillRepository_List(t *testing.T) {
+func TestSkillRepository_Find(t *testing.T) {
 	loadFixtures(t)
 
 	r := NewSkillRepository(db)
-	skills, err := r.Find(&SkillQuery{})
+	skills, err := r.Find()
 
 	assert.NoError(t, err)
 	assert.Len(t, skills, 1)
@@ -78,7 +78,7 @@ func TestSkillRepository_Delete(t *testing.T) {
 	err := r.Delete(1)
 	assert.NoError(t, err)
 
-	skills, err := r.Find(&SkillQuery{})
+	skills, err := r.Find()
 	assert.NoError(t, err)
 	assert.Len(t, skills, 0)
 }

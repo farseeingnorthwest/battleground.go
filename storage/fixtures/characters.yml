@@ -1,0 +1,8 @@
+- id: 1
+  name: "Oda"
+  damage: 10
+  defense: 5
+  critical_odds: 10
+  critical_loss: 200
+  health: 100
+  speed: 10

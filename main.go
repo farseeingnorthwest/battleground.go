@@ -36,6 +36,9 @@ func main() {
 			),
 		),
 		fx.Provide(
+			func(r *storage.CharacterRepository) controller.CharacterRepository {
+				return r
+			},
 			func(r *storage.SkillRepository) controller.SkillRepository {
 				return r
 			},

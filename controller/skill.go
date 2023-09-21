@@ -14,7 +14,7 @@ type SkillController struct {
 }
 
 type SkillRepository interface {
-	Find(query *storage.SkillQuery) ([]storage.Skill, error)
+	Find() ([]storage.Skill, error)
 	Create(skill *storage.Skill) error
 	Get(id int) (*storage.Skill, error)
 	Update(skill *storage.Skill) error
@@ -34,7 +34,7 @@ func (c SkillController) Mount(app *fiber.App) {
 }
 
 func (c SkillController) GetSkills(fc *fiber.Ctx) error {
-	skills, err := c.repo.Find(&storage.SkillQuery{})
+	skills, err := c.repo.Find()
 	if err != nil {
 		return err
 	}
