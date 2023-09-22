@@ -9,9 +9,13 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+type SkillMeta struct {
+	ID   int
+	Name string
+}
+
 type Skill struct {
-	ID      int
-	Name    string
+	SkillMeta
 	Reactor *Reactor
 }
 
@@ -44,7 +48,22 @@ func NewSkillRepository(db *sqlx.DB) *SkillRepository {
 	return &SkillRepository{db: db}
 }
 
-func (r SkillRepository) Find() (skills []Skill, err error) {
+func (r SkillRepository) Find(ids ...int) (skills []SkillMeta, err error) {
+	if len(ids) == 0 {
+		err = r.db.Select(&skills, "SELECT id, name FROM skills ORDER BY ID")
+		return
+	}
+
+	query, args, err := sqlx.In("SELECT id, name FROM skills WHERE id IN (?) ORDER BY ID", ids)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.Select(&skills, r.db.Rebind(query), args...)
+	return
+}
+
+func (r SkillRepository) FindEx() (skills []Skill, err error) {
 	err = r.db.Select(&skills, "SELECT * FROM skills ORDER BY ID")
 	return
 }
@@ -74,7 +93,12 @@ func (r SkillRepository) Update(skill *Skill) error {
 	return nil
 }
 
-func (r SkillRepository) Delete(id int) error {
+func (r SkillRepository) Delete(id int, force bool) error {
+	if force {
+		if _, err := r.db.Exec("DELETE FROM character_skills WHERE skill_id = $1", id); err != nil {
+			return err
+		}
+	}
 	if _, err := r.db.Exec("DELETE FROM skills WHERE id = $1", id); err != nil {
 		return err
 	}

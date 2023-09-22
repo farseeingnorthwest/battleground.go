@@ -1,0 +1,2 @@
+-- Create "character_skills" table
+CREATE TABLE "public"."character_skills" ("character_id" integer NOT NULL, "slot" smallint NOT NULL, "skill_id" integer NOT NULL, PRIMARY KEY ("character_id", "slot", "skill_id"), CONSTRAINT "characters_skills_character_id_fkey" FOREIGN KEY ("character_id") REFERENCES "public"."characters" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION, CONSTRAINT "characters_skills_skill_id_fkey" FOREIGN KEY ("skill_id") REFERENCES "public"."skills" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION);

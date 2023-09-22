@@ -67,3 +67,54 @@
         }
       ]
     }
+
+- id: 2
+  name: "Sleep"
+  reactor: >
+    {
+      "tags": [
+        {
+          "_kind": "priority",
+          "index": 10
+        },
+        {
+          "_kind": "label",
+          "text": "Sleep"
+        },
+        {
+          "_kind": "exclusion_group",
+          "index": 0
+        }
+      ],
+      "capacity": {
+        "count": 1,
+        "when": [
+          {
+            "signal": "round_end"
+          },
+          {
+            "if": [
+              {
+                "_kind": "verb",
+                "verb": "attack"
+              },
+              {
+                "_kind": "current_is_target"
+              }
+            ],
+            "signal": "post_action"
+          }
+        ]
+      },
+      "cases": [
+        {
+          "when": {
+            "signal": "launch"
+          },
+          "then": {
+            "_kind": "sequence",
+            "do": []
+          }
+        }
+      ]
+    }

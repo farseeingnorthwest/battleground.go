@@ -16,6 +16,7 @@ import (
 
 func TestCharacterController_GetCharacters(t *testing.T) {
 	r := new(mockCharacterRepository)
+	sr := new(mockSkillRepository)
 	r.On("Find").Return([]storage.Character{
 		{
 			ID:           1,
@@ -26,48 +27,77 @@ func TestCharacterController_GetCharacters(t *testing.T) {
 			CriticalLoss: 200,
 			Health:       100,
 			Speed:        10,
+			Skills: map[int]storage.SkillMeta{
+				1: {
+					ID:   1,
+					Name: "Normal Attack",
+				},
+			},
 		},
 	}, nil)
 
 	app := fiber.New()
-	NewCharacterController(r).Mount(app)
+	NewCharacterController(r, sr).Mount(app)
 	req := httptest.NewRequest("GET", "/characters", nil)
 	resp, err := app.Test(req)
 
 	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-	assert.Contains(t, string(functional.First(io.ReadAll(resp.Body))), "Oda")
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Contains(t, string(body), "Oda")
+	assert.Contains(t, string(body), "Normal Attack")
 }
 
 func TestCharacterController_CreateCharacter(t *testing.T) {
 	r := new(mockCharacterRepository)
+	sr := new(mockSkillRepository)
 	r.On("Create", &storage.Character{
-		Name:         "Toyotomi",
+		Name:         "Toy",
 		Damage:       9,
 		Defense:      4,
 		CriticalOdds: 10,
 		CriticalLoss: 150,
 		Health:       80,
 		Speed:        9,
+		Skills: map[int]storage.SkillMeta{
+			1: {
+				ID:   2,
+				Name: "Sleep",
+			},
+		},
 	}).Run(func(args mock.Arguments) {
 		args.Get(0).(*storage.Character).ID = 1
 	}).Return(nil)
+	sr.On("Find", []int{2}).Return([]storage.SkillMeta{
+		{
+			ID:   2,
+			Name: "Sleep",
+		},
+	}, nil)
 
 	app := fiber.New()
-	NewCharacterController(r).Mount(app)
+	NewCharacterController(r, sr).Mount(app)
 	req := httptest.NewRequest("POST", "/characters", strings.NewReader(
-		`{"name":"Toyotomi","damage":9,"defense":4,"critical_odds":10,"critical_loss":150,"health":80,"speed":9}`))
+		`{"name":"Toy","damage":9,"defense":4,"critical_odds":10,"critical_loss":150,"health":80,"speed":9,"skills":{"1":2}}`))
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := app.Test(req)
 
 	r.AssertExpectations(t)
+	sr.AssertExpectations(t)
 	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-	assert.Contains(t, string(functional.First(io.ReadAll(resp.Body))), "Toyotomi")
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Contains(t, string(body), "Toy")
+	assert.Contains(t, string(body), "Sleep")
 }
 
 func TestCharacterController_GetCharacter(t *testing.T) {
 	r := new(mockCharacterRepository)
+	sr := new(mockSkillRepository)
 	r.On("Get", 1).Return(&storage.Character{
 		ID:           1,
 		Name:         "Oda",
@@ -80,7 +110,7 @@ func TestCharacterController_GetCharacter(t *testing.T) {
 	}, nil)
 
 	app := fiber.New()
-	NewCharacterController(r).Mount(app)
+	NewCharacterController(r, sr).Mount(app)
 	req := httptest.NewRequest("GET", "/characters/1", nil)
 	resp, err := app.Test(req)
 
@@ -91,6 +121,7 @@ func TestCharacterController_GetCharacter(t *testing.T) {
 
 func TestCharacterController_UpdateCharacter(t *testing.T) {
 	r := new(mockCharacterRepository)
+	sr := new(mockSkillRepository)
 	r.On("Update", &storage.Character{
 		ID:           1,
 		Name:         "Oda",
@@ -100,27 +131,45 @@ func TestCharacterController_UpdateCharacter(t *testing.T) {
 		CriticalLoss: 150,
 		Health:       80,
 		Speed:        9,
+		Skills: map[int]storage.SkillMeta{
+			4: {
+				ID:   2,
+				Name: "Sleep",
+			},
+		},
 	}).Return(nil)
+	sr.On("Find", []int{2}).Return([]storage.SkillMeta{
+		{
+			ID:   2,
+			Name: "Sleep",
+		},
+	}, nil)
 
 	app := fiber.New()
-	NewCharacterController(r).Mount(app)
+	NewCharacterController(r, sr).Mount(app)
 	req := httptest.NewRequest("PUT", "/characters/1", strings.NewReader(
-		`{"name":"Oda","damage":9,"defense":4,"critical_odds":10,"critical_loss":150,"health":80,"speed":9}`))
+		`{"name":"Oda","damage":9,"defense":4,"critical_odds":10,"critical_loss":150,"health":80,"speed":9,"skills":{"4":2}}`))
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := app.Test(req)
 
 	r.AssertExpectations(t)
+	sr.AssertExpectations(t)
 	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-	assert.Contains(t, string(functional.First(io.ReadAll(resp.Body))), "Oda")
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Contains(t, string(body), "Oda")
+	assert.Contains(t, string(body), "Sleep")
 }
 
 func TestCharacterController_DeleteCharacter(t *testing.T) {
 	r := new(mockCharacterRepository)
+	sr := new(mockSkillRepository)
 	r.On("Delete", 1).Return(nil)
 
 	app := fiber.New()
-	NewCharacterController(r).Mount(app)
+	NewCharacterController(r, sr).Mount(app)
 	req := httptest.NewRequest("DELETE", "/characters/1", nil)
 	resp, err := app.Test(req)
 
@@ -153,7 +202,7 @@ func (r *mockCharacterRepository) Update(character *storage.Character) error {
 	return args.Error(0)
 }
 
-func (r *mockCharacterRepository) Delete(id int) error {
+func (r *mockCharacterRepository) Delete(id int, force bool) error {
 	args := r.Called(id)
 	return args.Error(0)
 }

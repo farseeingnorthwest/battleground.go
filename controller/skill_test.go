@@ -17,11 +17,10 @@ import (
 
 func TestSkillController_GetSkills(t *testing.T) {
 	r := new(mockSkillRepository)
-	r.On("Find").Return([]storage.Skill{
+	r.On("Find", []int(nil)).Return([]storage.SkillMeta{
 		{
-			ID:      1,
-			Name:    "Normal Attack",
-			Reactor: (*storage.Reactor)(examples.Regular[0]),
+			ID:   1,
+			Name: "Normal Attack",
 		},
 	}, nil)
 
@@ -32,13 +31,18 @@ func TestSkillController_GetSkills(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-	assert.Contains(t, string(functional.First(io.ReadAll(resp.Body))), "NormalAttack")
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.JSONEq(t, `[{"id":1,"name":"Normal Attack"}]`, string(body))
 }
 
 func TestSkillController_CreateSkill(t *testing.T) {
 	r := new(mockSkillRepository)
 	r.On("Create", &storage.Skill{
-		Name:    "Sleep",
+		SkillMeta: storage.SkillMeta{
+			Name: "Sleep",
+		},
 		Reactor: (*storage.Reactor)(examples.Effect["Sleep"]),
 	}).Run(func(args mock.Arguments) {
 		args.Get(0).(*storage.Skill).ID = 1
@@ -60,8 +64,10 @@ func TestSkillController_CreateSkill(t *testing.T) {
 func TestSkillController_GetSkill(t *testing.T) {
 	r := new(mockSkillRepository)
 	r.On("Get", 1).Return(&storage.Skill{
-		ID:      1,
-		Name:    "Normal Attack",
+		SkillMeta: storage.SkillMeta{
+			ID:   1,
+			Name: "Normal Attack",
+		},
 		Reactor: (*storage.Reactor)(examples.Regular[0]),
 	}, nil)
 
@@ -78,8 +84,10 @@ func TestSkillController_GetSkill(t *testing.T) {
 func TestSkillController_UpdateSkill(t *testing.T) {
 	r := new(mockSkillRepository)
 	r.On("Update", &storage.Skill{
-		ID:      1,
-		Name:    "Sleep",
+		SkillMeta: storage.SkillMeta{
+			ID:   1,
+			Name: "Sleep",
+		},
 		Reactor: (*storage.Reactor)(examples.Effect["Sleep"]),
 	}).Return(nil)
 
@@ -114,9 +122,9 @@ type mockSkillRepository struct {
 	mock.Mock
 }
 
-func (r *mockSkillRepository) Find() ([]storage.Skill, error) {
-	args := r.Called()
-	return args.Get(0).([]storage.Skill), args.Error(1)
+func (r *mockSkillRepository) Find(ids ...int) ([]storage.SkillMeta, error) {
+	args := r.Called(ids)
+	return args.Get(0).([]storage.SkillMeta), args.Error(1)
 }
 
 func (r *mockSkillRepository) Create(skill *storage.Skill) error {
@@ -134,7 +142,7 @@ func (r *mockSkillRepository) Update(skill *storage.Skill) error {
 	return args.Error(0)
 }
 
-func (r *mockSkillRepository) Delete(id int) error {
+func (r *mockSkillRepository) Delete(id int, force bool) error {
 	args := r.Called(id)
 	return args.Error(0)
 }

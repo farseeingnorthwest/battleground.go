@@ -3,9 +3,9 @@ package controller
 import (
 	"encoding/json"
 
+	"github.com/farseeingnorthwest/battleground.go/functional"
 	"github.com/farseeingnorthwest/battleground.go/storage"
 	"github.com/farseeingnorthwest/playground/battlefield/v2"
-	"github.com/farseeingnorthwest/playground/battlefield/v2/functional"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,11 +14,11 @@ type SkillController struct {
 }
 
 type SkillRepository interface {
-	Find() ([]storage.Skill, error)
+	Find(ids ...int) ([]storage.SkillMeta, error)
 	Create(skill *storage.Skill) error
 	Get(id int) (*storage.Skill, error)
 	Update(skill *storage.Skill) error
-	Delete(id int) error
+	Delete(id int, force bool) error
 }
 
 func NewSkillController(repo SkillRepository) SkillController {
@@ -39,7 +39,7 @@ func (c SkillController) GetSkills(fc *fiber.Ctx) error {
 		return err
 	}
 
-	return fc.JSON(functional.Map(newSkillView)(skills))
+	return fc.JSON(functional.MapSlice(newSkillMetaView, skills))
 }
 
 func (c SkillController) CreateSkill(fc *fiber.Ctx) error {
@@ -52,7 +52,9 @@ func (c SkillController) CreateSkill(fc *fiber.Ctx) error {
 	}
 
 	skill := storage.Skill{
-		Name:    form.Name,
+		SkillMeta: storage.SkillMeta{
+			Name: form.Name,
+		},
 		Reactor: (*storage.Reactor)(form.Reactor.FatReactor),
 	}
 	if err := c.repo.Create(&skill); err != nil {
@@ -90,8 +92,10 @@ func (c SkillController) UpdateSkill(fc *fiber.Ctx) error {
 	}
 
 	skill := storage.Skill{
-		ID:      id,
-		Name:    form.Name,
+		SkillMeta: storage.SkillMeta{
+			ID:   id,
+			Name: form.Name,
+		},
 		Reactor: (*storage.Reactor)(form.Reactor.FatReactor),
 	}
 	if err := c.repo.Update(&skill); err != nil {
@@ -106,11 +110,24 @@ func (c SkillController) DeleteSkill(fc *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	if err := c.repo.Delete(id); err != nil {
+	if err := c.repo.Delete(id, false); err != nil {
 		return err
 	}
 
 	return fc.SendStatus(fiber.StatusNoContent)
+}
+
+type skillMetaView storage.SkillMeta
+
+func newSkillMetaView(skill storage.SkillMeta) skillMetaView {
+	return skillMetaView(skill)
+}
+
+func (s skillMetaView) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{
+		"id":   s.ID,
+		"name": s.Name,
+	})
 }
 
 type skillView storage.Skill
@@ -126,3 +143,8 @@ func (v skillView) MarshalJSON() ([]byte, error) {
 		"reactor": (*battlefield.FatReactor)(v.Reactor),
 	})
 }
+
+type bySkillID []storage.SkillMeta
+
+func (s bySkillID) Len() int                           { return len(s) }
+func (s bySkillID) Get(i int) (int, storage.SkillMeta) { return s[i].ID, s[i] }

@@ -9,13 +9,31 @@ import (
 )
 
 func TestSkillRepository_Find(t *testing.T) {
+	for _, tt := range []struct {
+		ids    []int
+		skills []SkillMeta
+	}{
+		{nil, []SkillMeta{{1, "Normal Attack"}, {2, "Sleep"}}},
+		{[]int{1}, []SkillMeta{{1, "Normal Attack"}}},
+	} {
+		loadFixtures(t)
+
+		r := NewSkillRepository(db)
+		skills, err := r.Find(tt.ids...)
+
+		assert.NoError(t, err)
+		assert.Equal(t, tt.skills, skills)
+	}
+}
+
+func TestSkillRepository_FindEx(t *testing.T) {
 	loadFixtures(t)
 
 	r := NewSkillRepository(db)
-	skills, err := r.Find()
+	skills, err := r.FindEx()
 
 	assert.NoError(t, err)
-	assert.Len(t, skills, 1)
+	assert.Len(t, skills, 2)
 }
 
 func TestSkillRepository_Get(t *testing.T) {
@@ -35,7 +53,9 @@ func TestSkillRepository_Create(t *testing.T) {
 
 	r := NewSkillRepository(db)
 	taunt := Skill{
-		Name: "Taunt",
+		SkillMeta: SkillMeta{
+			Name: "Taunt",
+		},
 		Reactor: (*Reactor)(b.NewFatReactor(
 			b.FatTags(b.Label("Taunt")),
 			b.FatCapacity(b.NewSignalTrigger(&b.RoundEndSignal{}), 2),
@@ -56,8 +76,10 @@ func TestSkillRepository_Update(t *testing.T) {
 
 	r := NewSkillRepository(db)
 	err := r.Update(&Skill{
-		ID:   1,
-		Name: "Taunt",
+		SkillMeta: SkillMeta{
+			ID:   1,
+			Name: "Taunt",
+		},
 		Reactor: (*Reactor)(b.NewFatReactor(
 			b.FatTags(b.Label("Taunt")),
 			b.FatCapacity(b.NewSignalTrigger(&b.RoundEndSignal{}), 2),
@@ -72,13 +94,30 @@ func TestSkillRepository_Update(t *testing.T) {
 }
 
 func TestSkillRepository_Delete(t *testing.T) {
-	loadFixtures(t)
+	for _, tt := range []struct {
+		id    int
+		force bool
+		ok    bool
+		count int
+	}{
+		{1, false, false, 2},
+		{1, true, true, 1},
+		{2, false, true, 1},
+	} {
+		t.Run("", func(t *testing.T) {
+			loadFixtures(t)
 
-	r := NewSkillRepository(db)
-	err := r.Delete(1)
-	assert.NoError(t, err)
+			r := NewSkillRepository(db)
+			err := r.Delete(tt.id, tt.force)
+			if tt.ok {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+			}
 
-	skills, err := r.Find()
-	assert.NoError(t, err)
-	assert.Len(t, skills, 0)
+			skills, err := r.Find()
+			assert.NoError(t, err)
+			assert.Len(t, skills, tt.count)
+		})
+	}
 }
