@@ -111,7 +111,7 @@ type observer struct {
 func (o *observer) React(signal battlefield.Signal, ec battlefield.EvaluationContext) {
 	switch signal := signal.(type) {
 	case *battlefield.PostActionSignal:
-		source, _ := signal.Action().Script().Source()
+		_, source, _ := signal.Action().Script().Source()
 		o.winner = source.(battlefield.Warrior)
 	}
 }

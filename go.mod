@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/alecthomas/kong v0.8.0
-	github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20230919050329-89e9fe8ebb24
+	github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20230925121905-c2c74e81f2bf
 	github.com/go-testfixtures/testfixtures v2.5.1+incompatible
 	github.com/gofiber/fiber/v2 v2.49.2
 	github.com/jmoiron/sqlx v1.3.5

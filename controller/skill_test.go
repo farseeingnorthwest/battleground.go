@@ -9,7 +9,6 @@ import (
 	. "github.com/farseeingnorthwest/battleground.go/controller"
 	"github.com/farseeingnorthwest/battleground.go/storage"
 	"github.com/farseeingnorthwest/playground/battlefield/v2/examples"
-	"github.com/farseeingnorthwest/playground/battlefield/v2/functional"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -58,7 +57,10 @@ func TestSkillController_CreateSkill(t *testing.T) {
 	r.AssertExpectations(t)
 	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-	assert.Contains(t, string(functional.First(io.ReadAll(resp.Body))), "Sleep")
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Contains(t, string(body), "Sleep")
 }
 
 func TestSkillController_GetSkill(t *testing.T) {
@@ -78,7 +80,10 @@ func TestSkillController_GetSkill(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-	assert.Contains(t, string(functional.First(io.ReadAll(resp.Body))), "NormalAttack")
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Contains(t, string(body), "NormalAttack")
 }
 
 func TestSkillController_UpdateSkill(t *testing.T) {
@@ -101,7 +106,10 @@ func TestSkillController_UpdateSkill(t *testing.T) {
 	r.AssertExpectations(t)
 	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-	assert.Contains(t, string(functional.First(io.ReadAll(resp.Body))), "Sleep")
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Contains(t, string(body), "Sleep")
 }
 
 func TestSkillController_DeleteSkill(t *testing.T) {

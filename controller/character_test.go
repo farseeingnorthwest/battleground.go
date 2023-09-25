@@ -8,7 +8,6 @@ import (
 
 	. "github.com/farseeingnorthwest/battleground.go/controller"
 	"github.com/farseeingnorthwest/battleground.go/storage"
-	"github.com/farseeingnorthwest/playground/battlefield/v2/functional"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -116,7 +115,10 @@ func TestCharacterController_GetCharacter(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
-	assert.Contains(t, string(functional.First(io.ReadAll(resp.Body))), "Oda")
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Contains(t, string(body), "Oda")
 }
 
 func TestCharacterController_UpdateCharacter(t *testing.T) {
