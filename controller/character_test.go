@@ -17,7 +17,7 @@ import (
 func TestCharacterController_GetCharacters(t *testing.T) {
 	r := new(mockCharacterRepository)
 	sr := new(mockSkillRepository)
-	r.On("Find").Return([]storage.Character{
+	r.On("Find", []int(nil)).Return([]storage.Character{
 		{
 			ID:           1,
 			Name:         "Oda",
@@ -182,8 +182,8 @@ type mockCharacterRepository struct {
 	mock.Mock
 }
 
-func (r *mockCharacterRepository) Find() ([]storage.Character, error) {
-	args := r.Called()
+func (r *mockCharacterRepository) Find(ids ...int) ([]storage.Character, error) {
+	args := r.Called(ids)
 	return args.Get(0).([]storage.Character), args.Error(1)
 }
 

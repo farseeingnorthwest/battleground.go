@@ -14,11 +14,11 @@ type CharacterController struct {
 }
 
 type CharacterRepository interface {
-	Find() ([]storage.Character, error)
-	Create(character *storage.Character) error
-	Get(id int) (*storage.Character, error)
-	Update(character *storage.Character) error
-	Delete(id int, force bool) error
+	Find(...int) ([]storage.Character, error)
+	Create(*storage.Character) error
+	Get(int) (*storage.Character, error)
+	Update(*storage.Character) error
+	Delete(int, bool) error
 }
 
 func NewCharacterController(repo CharacterRepository, skillRepo SkillRepository) CharacterController {
@@ -124,7 +124,7 @@ func (c CharacterController) form(fc *fiber.Ctx, withID bool) (*storage.Characte
 			return nil, err
 		}
 
-		metas := functional.Tabulate[int, storage.SkillMeta](bySkillID(skillMetas))
+		metas := functional.Tabulate[int, storage.SkillMeta](bySkillMetaID(skillMetas))
 		skills = make(map[int]storage.SkillMeta)
 		for slot, id := range form.Skills {
 			skills[slot] = metas[id]
@@ -163,3 +163,8 @@ func (c characterView) MarshalJSON() ([]byte, error) {
 		"skills":        functional.MapValues(newSkillMetaView, c.Skills),
 	})
 }
+
+type byCharacterID []storage.Character
+
+func (s byCharacterID) Len() int                           { return len(s) }
+func (s byCharacterID) Get(i int) (int, storage.Character) { return s[i].ID, s[i] }

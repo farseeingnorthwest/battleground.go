@@ -28,10 +28,21 @@ func NewCharacterRepository(db *sqlx.DB) *CharacterRepository {
 	return &CharacterRepository{db: db}
 }
 
-func (r CharacterRepository) Find() ([]Character, error) {
+func (r CharacterRepository) Find(ids ...int) ([]Character, error) {
 	var characters []Character
-	if err := r.db.Select(&characters, "SELECT * FROM characters ORDER BY id"); err != nil {
-		return nil, err
+	if len(ids) == 0 {
+		if err := r.db.Select(&characters, "SELECT * FROM characters ORDER BY id"); err != nil {
+			return nil, err
+		}
+	} else {
+		query, args, err := sqlx.In("SELECT * FROM characters WHERE id IN (?) ORDER BY id", ids)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := r.db.Select(&characters, query, args...); err != nil {
+			return nil, err
+		}
 	}
 
 	return r.getAllCharacterSkills(characters)

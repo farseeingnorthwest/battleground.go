@@ -127,6 +127,11 @@ func (r *mockSkillRepository) Find(ids ...int) ([]storage.SkillMeta, error) {
 	return args.Get(0).([]storage.SkillMeta), args.Error(1)
 }
 
+func (r *mockSkillRepository) FindEx(ids ...int) ([]storage.Skill, error) {
+	args := r.Called(ids)
+	return args.Get(0).([]storage.Skill), args.Error(1)
+}
+
 func (r *mockSkillRepository) Create(skill *storage.Skill) error {
 	args := r.Called(skill)
 	return args.Error(0)

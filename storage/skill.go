@@ -16,7 +16,7 @@ type SkillMeta struct {
 
 type Skill struct {
 	SkillMeta
-	Reactor *Reactor
+	*Reactor
 }
 
 type Reactor battlefield.FatReactor
@@ -38,6 +38,10 @@ func (r *Reactor) Scan(value interface{}) error {
 
 	*r = Reactor(*f.FatReactor)
 	return nil
+}
+
+func (r *Reactor) Spawn() battlefield.Reactor {
+	return (*battlefield.FatReactor)(r).Fork(nil).(battlefield.Reactor)
 }
 
 type SkillRepository struct {
@@ -63,8 +67,18 @@ func (r SkillRepository) Find(ids ...int) (skills []SkillMeta, err error) {
 	return
 }
 
-func (r SkillRepository) FindEx() (skills []Skill, err error) {
-	err = r.db.Select(&skills, "SELECT * FROM skills ORDER BY ID")
+func (r SkillRepository) FindEx(ids ...int) (skills []Skill, err error) {
+	if len(ids) == 0 {
+		err = r.db.Select(&skills, "SELECT * FROM skills ORDER BY ID")
+		return
+	}
+
+	query, args, err := sqlx.In("SELECT * FROM skills WHERE id IN (?) ORDER BY ID", ids)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.db.Select(&skills, r.db.Rebind(query), args...)
 	return
 }
 

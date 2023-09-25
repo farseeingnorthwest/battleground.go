@@ -15,6 +15,7 @@ type SkillController struct {
 
 type SkillRepository interface {
 	Find(ids ...int) ([]storage.SkillMeta, error)
+	FindEx(ids ...int) ([]storage.Skill, error)
 	Create(skill *storage.Skill) error
 	Get(id int) (*storage.Skill, error)
 	Update(skill *storage.Skill) error
@@ -144,7 +145,12 @@ func (v skillView) MarshalJSON() ([]byte, error) {
 	})
 }
 
-type bySkillID []storage.SkillMeta
+type bySkillMetaID []storage.SkillMeta
 
-func (s bySkillID) Len() int                           { return len(s) }
-func (s bySkillID) Get(i int) (int, storage.SkillMeta) { return s[i].ID, s[i] }
+func (s bySkillMetaID) Len() int                           { return len(s) }
+func (s bySkillMetaID) Get(i int) (int, storage.SkillMeta) { return s[i].ID, s[i] }
+
+type bySkillID []storage.Skill
+
+func (s bySkillID) Len() int                       { return len(s) }
+func (s bySkillID) Get(i int) (int, storage.Skill) { return s[i].ID, s[i] }
