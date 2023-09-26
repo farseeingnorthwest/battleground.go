@@ -20,6 +20,8 @@ github.com/denisenkom/go-mssqldb v0.12.3/go.mod h1:k0mtMFOnU+AihqFxPMiF05rtiDror
 github.com/dnaeon/go-vcr v1.2.0/go.mod h1:R4UdLID7HZT3taECzJs4YgbbH6PIGXB6W/sc5OLb6RQ=
 github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20230925121905-c2c74e81f2bf h1:SKXkwl2kP8ErMZgxrnuLtSg8wQ4YapiAqoDTacr70f0=
 github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20230925121905-c2c74e81f2bf/go.mod h1:qTU06qfYOiFXwFXJQ4Z3ForDAXnGSXm3AZqkBDbqzQ4=
+github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20230926055858-cf8bc2e3481e h1:cmnw0/0s63S0x9nMxVXtk9yWCXkKRi4Xd2Ddeoj1Egg=
+github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20230926055858-cf8bc2e3481e/go.mod h1:qTU06qfYOiFXwFXJQ4Z3ForDAXnGSXm3AZqkBDbqzQ4=
 github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/go-testfixtures/testfixtures v2.5.1+incompatible h1:IBJp7NQjfdUHc4+gDH0j1e76LilPeMZuvm/oEUhDwxo=

@@ -50,7 +50,7 @@ func TestSkillController_CreateSkill(t *testing.T) {
 	app := fiber.New()
 	NewSkillController(r).Mount(app)
 	req := httptest.NewRequest("POST", "/skills", strings.NewReader(
-		`{"name":"Sleep","reactor":{"tags":[{"_kind":"exclusion_group","index":0},{"_kind":"priority","index":10},{"_kind":"label","text":"Sleep"}],"capacity":{"count":1,"when":[{"signal":"round_end"},{"if":[{"_kind":"verb","verb":"attack"},{"_kind":"current_is_target"}],"signal":"post_action"}]},"cases":[{"when":{"signal":"launch"},"then":{"_kind":"sequence","do":[]}}]}}`))
+		`{"name":"Sleep","reactor":{"tags":[{"_kind":"exclusion_group","index":0},{"_kind":"priority","index":10},{"_kind":"label","text":"Sleep"}],"capacity":{"count":1,"when":[{"signal":"round_end"},{"if":[{"_kind":"verb","verb":"attack"},{"_kind":"current_is_target"}],"signal":"post_action"}]},"respond":{"when":{"signal":"launch"},"then":{"_kind":"sequence","do":[]}}}}`))
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := app.Test(req)
 
@@ -99,7 +99,7 @@ func TestSkillController_UpdateSkill(t *testing.T) {
 	app := fiber.New()
 	NewSkillController(r).Mount(app)
 	req := httptest.NewRequest("PUT", "/skills/1", strings.NewReader(
-		`{"name":"Sleep","reactor":{"tags":[{"_kind":"exclusion_group","index":0},{"_kind":"priority","index":10},{"_kind":"label","text":"Sleep"}],"capacity":{"count":1,"when":[{"signal":"round_end"},{"if":[{"_kind":"verb","verb":"attack"},{"_kind":"current_is_target"}],"signal":"post_action"}]},"cases":[{"when":{"signal":"launch"},"then":{"_kind":"sequence","do":[]}}]}}`))
+		`{"name":"Sleep","reactor":{"tags":[{"_kind":"exclusion_group","index":0},{"_kind":"priority","index":10},{"_kind":"label","text":"Sleep"}],"capacity":{"count":1,"when":[{"signal":"round_end"},{"if":[{"_kind":"verb","verb":"attack"},{"_kind":"current_is_target"}],"signal":"post_action"}]},"respond":{"when":{"signal":"launch"},"then":{"_kind":"sequence","do":[]}}}}`))
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := app.Test(req)
 

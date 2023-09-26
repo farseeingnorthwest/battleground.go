@@ -12,60 +12,58 @@
           "text": "NormalAttack"
         }
       ],
-      "cases": [
-        {
-          "when": {
-            "signal": "launch"
-          },
-          "then": {
-            "_kind": "sequence",
-            "do": [
-              {
-                "_kind": "select",
-                "do": {
-                  "_kind": "verb",
-                  "verb": {
-                    "_verb": "attack"
-                  },
-                  "evaluator": {
-                    "_kind": "axis",
-                    "axis": "damage"
-                  }
+      "respond": {
+        "when": {
+          "signal": "launch"
+        },
+        "then": {
+          "_kind": "sequence",
+          "do": [
+            {
+              "_kind": "select",
+              "do": {
+                "_kind": "verb",
+                "verb": {
+                  "_verb": "attack"
                 },
-                "selector": {
-                  "_kind": "pipeline",
-                  "selectors": [
-                    {
-                      "_kind": "side",
-                      "side": false
-                    },
-                    {
-                      "_kind": "water_level",
-                      "comparator": "\u003e",
-                      "evaluator": {
-                        "_kind": "axis",
-                        "axis": "health"
-                      },
-                      "value": 0
-                    },
-                    {
-                      "_kind": "shuffle",
-                      "preference": {
-                        "_kind": "label",
-                        "text": "Taunt"
-                      }
-                    },
-                    {
-                      "_kind": "front",
-                      "count": 1
-                    }
-                  ]
+                "evaluator": {
+                  "_kind": "axis",
+                  "axis": "damage"
                 }
+              },
+              "selector": {
+                "_kind": "pipeline",
+                "selectors": [
+                  {
+                    "_kind": "side",
+                    "side": false
+                  },
+                  {
+                    "_kind": "water_level",
+                    "comparator": "\u003e",
+                    "evaluator": {
+                      "_kind": "axis",
+                      "axis": "health"
+                    },
+                    "value": 0
+                  },
+                  {
+                    "_kind": "shuffle",
+                    "preference": {
+                      "_kind": "label",
+                      "text": "Taunt"
+                    }
+                  },
+                  {
+                    "_kind": "front",
+                    "count": 1
+                  }
+                ]
               }
-            ]
-          }
+            }
+          ]
         }
-      ]
+      }
     }
 
 - id: 2
@@ -106,15 +104,13 @@
           }
         ]
       },
-      "cases": [
-        {
-          "when": {
-            "signal": "launch"
-          },
-          "then": {
-            "_kind": "sequence",
-            "do": []
-          }
+      "respond": {
+        "when": {
+          "signal": "launch"
+        },
+        "then": {
+          "_kind": "sequence",
+          "do": []
         }
-      ]
+      }
     }

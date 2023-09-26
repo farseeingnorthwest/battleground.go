@@ -16,7 +16,7 @@ type SkillMeta struct {
 
 type Skill struct {
 	SkillMeta
-	*Reactor
+	Reactor *Reactor
 }
 
 type Reactor battlefield.FatReactor

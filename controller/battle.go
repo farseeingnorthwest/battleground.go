@@ -45,11 +45,12 @@ func (c BattleController) CreateBattle(fc *fiber.Ctx) error {
 	}
 	ob := observer{battlefield.NewTagSet(battlefield.Priority(1000000)), nil}
 	f := battlefield.NewBattleField(
+		battlefield.JustRng{},
 		append(left, right...),
 		append(
 			functional.MapSlice(
 				func(id int) battlefield.Reactor {
-					return skills[id].Spawn()
+					return skills[id].Reactor.Spawn()
 				},
 				form.Ground,
 			),
@@ -93,7 +94,7 @@ func (c BattleController) getWarriors(m map[int]int, side battlefield.Side, skil
 			p,
 			battlefield.WarriorSkills(functional.MapSlice(
 				func(meta storage.SkillMeta) battlefield.Reactor {
-					return skills[meta.ID].Spawn()
+					return skills[meta.ID].Reactor.Spawn()
 				},
 				functional.Values(chars[id].Skills),
 			)...),
