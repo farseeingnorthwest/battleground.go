@@ -8,37 +8,67 @@ import (
 )
 
 func TestCharacterRepository_Find(t *testing.T) {
-	loadFixtures(t)
-
-	r := NewCharacterRepository(db)
-	characters, err := r.Find()
-
-	assert.NoError(t, err)
-	assert.Equal(t, []Character{
+	for _, tt := range []struct {
+		id         []int
+		characters []Character
+	}{
 		{
-			ID:           1,
-			Name:         "Oda",
-			Damage:       10,
-			Defense:      5,
-			CriticalOdds: 10,
-			CriticalLoss: 200,
-			Health:       100,
-			Speed:        10,
-			Skills: map[int]SkillMeta{
-				1: {ID: 1, Name: "Normal Attack"},
+			nil,
+			[]Character{
+				{
+					ID:           1,
+					Name:         "Oda",
+					Damage:       10,
+					Defense:      5,
+					CriticalOdds: 10,
+					CriticalLoss: 200,
+					Health:       100,
+					Speed:        10,
+					Skills: map[int]SkillMeta{
+						1: {ID: 1, Name: "Normal Attack"},
+					},
+				},
+				{
+					ID:           2,
+					Name:         "Ueno",
+					Damage:       9,
+					Defense:      4,
+					CriticalOdds: 20,
+					CriticalLoss: 200,
+					Health:       90,
+					Speed:        11,
+				},
 			},
 		},
 		{
-			ID:           2,
-			Name:         "Ueno",
-			Damage:       9,
-			Defense:      4,
-			CriticalOdds: 20,
-			CriticalLoss: 200,
-			Health:       90,
-			Speed:        11,
+			[]int{1},
+			[]Character{
+				{
+					ID:           1,
+					Name:         "Oda",
+					Damage:       10,
+					Defense:      5,
+					CriticalOdds: 10,
+					CriticalLoss: 200,
+					Health:       100,
+					Speed:        10,
+					Skills: map[int]SkillMeta{
+						1: {ID: 1, Name: "Normal Attack"},
+					},
+				},
+			},
 		},
-	}, characters)
+	} {
+		t.Run("", func(t *testing.T) {
+			loadFixtures(t)
+
+			r := NewCharacterRepository(db)
+			characters, err := r.Find(tt.id...)
+
+			assert.NoError(t, err)
+			assert.Equal(t, tt.characters, characters)
+		})
+	}
 }
 
 func TestCharacterRepository_Get(t *testing.T) {
@@ -135,18 +165,20 @@ func TestCharacterRepository_Delete(t *testing.T) {
 		{1, true, true, 1},
 		{2, false, true, 1},
 	} {
-		loadFixtures(t)
+		t.Run("", func(t *testing.T) {
+			loadFixtures(t)
 
-		r := NewCharacterRepository(db)
-		err := r.Delete(tt.id, tt.force)
-		if tt.ok {
+			r := NewCharacterRepository(db)
+			err := r.Delete(tt.id, tt.force)
+			if tt.ok {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+			}
+
+			characters, err := r.Find()
 			assert.NoError(t, err)
-		} else {
-			assert.Error(t, err)
-		}
-
-		characters, err := r.Find()
-		assert.NoError(t, err)
-		assert.Len(t, characters, tt.count)
+			assert.Len(t, characters, tt.count)
+		})
 	}
 }

@@ -16,13 +16,15 @@ func TestSkillRepository_Find(t *testing.T) {
 		{nil, []SkillMeta{{1, "Normal Attack"}, {2, "Sleep"}}},
 		{[]int{1}, []SkillMeta{{1, "Normal Attack"}}},
 	} {
-		loadFixtures(t)
+		t.Run("", func(t *testing.T) {
+			loadFixtures(t)
 
-		r := NewSkillRepository(db)
-		skills, err := r.Find(tt.ids...)
+			r := NewSkillRepository(db)
+			skills, err := r.Find(tt.ids...)
 
-		assert.NoError(t, err)
-		assert.Equal(t, tt.skills, skills)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.skills, skills)
+		})
 	}
 }
 

@@ -40,7 +40,7 @@ func (r CharacterRepository) Find(ids ...int) ([]Character, error) {
 			return nil, err
 		}
 
-		if err := r.db.Select(&characters, query, args...); err != nil {
+		if err := r.db.Select(&characters, r.db.Rebind(query), args...); err != nil {
 			return nil, err
 		}
 	}
