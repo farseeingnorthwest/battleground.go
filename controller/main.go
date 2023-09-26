@@ -27,5 +27,5 @@ var Module = fx.Module(
 )
 
 type Controller interface {
-	Mount(app *fiber.App)
+	Mount(fiber.Router)
 }

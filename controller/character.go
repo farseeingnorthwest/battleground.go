@@ -25,12 +25,12 @@ func NewCharacterController(repo CharacterRepository, skillRepo SkillRepository)
 	return CharacterController{repo, skillRepo}
 }
 
-func (c CharacterController) Mount(app *fiber.App) {
-	app.Get("/characters", c.GetCharacters)
-	app.Post("/characters", c.CreateCharacter)
-	app.Get("/characters/:id", c.GetCharacter)
-	app.Put("/characters/:id", c.UpdateCharacter)
-	app.Delete("/characters/:id", c.DeleteCharacter)
+func (c CharacterController) Mount(router fiber.Router) {
+	router.Get("/characters", c.GetCharacters)
+	router.Post("/characters", c.CreateCharacter)
+	router.Get("/characters/:id", c.GetCharacter)
+	router.Put("/characters/:id", c.UpdateCharacter)
+	router.Delete("/characters/:id", c.DeleteCharacter)
 }
 
 func (c CharacterController) GetCharacters(fc *fiber.Ctx) error {

@@ -16,8 +16,8 @@ func NewBattleController(characterRepo CharacterRepository, skillRepo SkillRepos
 	return BattleController{characterRepo, skillRepo}
 }
 
-func (c BattleController) Mount(app *fiber.App) {
-	app.Post("/battles", c.CreateBattle)
+func (c BattleController) Mount(router fiber.Router) {
+	router.Post("/battles", c.CreateBattle)
 }
 
 func (c BattleController) CreateBattle(fc *fiber.Ctx) error {

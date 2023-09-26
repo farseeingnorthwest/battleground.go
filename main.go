@@ -16,9 +16,10 @@ import (
 
 func main() {
 	var cli struct {
-		Debug bool
-		DSN   string `env:"DATABASE_URL" required:""`
-		Addr  string `default:":3000"`
+		Debug  bool
+		DSN    string `env:"DATABASE_URL" required:""`
+		Addr   string `default:":3000"`
+		Static string
 	}
 	kong.Parse(&cli)
 
@@ -33,6 +34,10 @@ func main() {
 			fx.Annotate(
 				cli.Debug,
 				fx.ResultTags(`name:"debug"`),
+			),
+			fx.Annotate(
+				cli.Static,
+				fx.ResultTags(`name:"static"`),
 			),
 		),
 		fx.Provide(
@@ -60,8 +65,12 @@ func NewFiberApp(params FiberAppParams, lc fx.Lifecycle) *fiber.App {
 	if params.Debug {
 		app.Use(logger.New())
 	}
+	api := app.Group("/api")
 	for _, c := range params.Controllers {
-		c.Mount(app)
+		c.Mount(api)
+	}
+	if params.Static != "" {
+		app.Static("/*", params.Static)
 	}
 
 	lc.Append(fx.Hook{
@@ -87,4 +96,5 @@ type FiberAppParams struct {
 	Controllers []controller.Controller `group:"controllers"`
 	Addr        string                  `name:"addr"`
 	Debug       bool                    `name:"debug"`
+	Static      string                  `name:"static"`
 }

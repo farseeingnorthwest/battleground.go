@@ -26,12 +26,12 @@ func NewSkillController(repo SkillRepository) SkillController {
 	return SkillController{repo}
 }
 
-func (c SkillController) Mount(app *fiber.App) {
-	app.Get("/skills", c.GetSkills)
-	app.Post("/skills", c.CreateSkill)
-	app.Get("/skills/:id", c.GetSkill)
-	app.Put("/skills/:id", c.UpdateSkill)
-	app.Delete("/skills/:id", c.DeleteSkill)
+func (c SkillController) Mount(router fiber.Router) {
+	router.Get("/skills", c.GetSkills)
+	router.Post("/skills", c.CreateSkill)
+	router.Get("/skills/:id", c.GetSkill)
+	router.Put("/skills/:id", c.UpdateSkill)
+	router.Delete("/skills/:id", c.DeleteSkill)
 }
 
 func (c SkillController) GetSkills(fc *fiber.Ctx) error {
