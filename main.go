@@ -70,7 +70,7 @@ func NewFiberApp(params FiberAppParams, lc fx.Lifecycle) *fiber.App {
 		c.Mount(api)
 	}
 	if params.Static != "" {
-		app.Static("/*", params.Static)
+		app.Static("/", params.Static)
 	}
 
 	lc.Append(fx.Hook{
