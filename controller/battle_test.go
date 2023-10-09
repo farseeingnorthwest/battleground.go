@@ -1,10 +1,13 @@
 package controller_test
 
 import (
+	"encoding/json"
 	"io"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/santhosh-tekuri/jsonschema/v5"
 
 	"github.com/farseeingnorthwest/battleground.go/controller"
 	"github.com/farseeingnorthwest/battleground.go/storage"
@@ -14,6 +17,9 @@ import (
 )
 
 func TestBattleController_CreateBattle(t *testing.T) {
+	sch, err := jsonschema.Compile("battle.schema.json")
+	assert.NoError(t, err)
+
 	r := new(mockCharacterRepository)
 	sr := new(mockSkillRepository)
 	sr.On("FindEx", []int(nil)).Return([]storage.Skill{
@@ -31,6 +37,34 @@ func TestBattleController_CreateBattle(t *testing.T) {
 			},
 			Reactor: (*storage.Reactor)(examples.Regular[3]),
 		},
+		{
+			SkillMeta: storage.SkillMeta{
+				ID:   3,
+				Name: "#1-1",
+			},
+			Reactor: (*storage.Reactor)(examples.Special[0][0]),
+		},
+		{
+			SkillMeta: storage.SkillMeta{
+				ID:   4,
+				Name: "#1-2",
+			},
+			Reactor: (*storage.Reactor)(examples.Special[0][1]),
+		},
+		{
+			SkillMeta: storage.SkillMeta{
+				ID:   5,
+				Name: "#1-3",
+			},
+			Reactor: (*storage.Reactor)(examples.Special[0][2]),
+		},
+		{
+			SkillMeta: storage.SkillMeta{
+				ID:   6,
+				Name: "#1-4",
+			},
+			Reactor: (*storage.Reactor)(examples.Special[0][3]),
+		},
 	}, nil)
 	r.On("Find", []int{1}).Return([]storage.Character{
 		{
@@ -40,12 +74,28 @@ func TestBattleController_CreateBattle(t *testing.T) {
 			Defense:      5,
 			CriticalOdds: 10,
 			CriticalLoss: 200,
-			Health:       100,
+			Health:       200,
 			Speed:        10,
 			Skills: map[int]storage.SkillMeta{
 				0: {
 					ID:   1,
 					Name: "Normal Attack",
+				},
+				1: {
+					ID:   3,
+					Name: "#1-1",
+				},
+				2: {
+					ID:   4,
+					Name: "#1-2",
+				},
+				3: {
+					ID:   5,
+					Name: "#1-3",
+				},
+				4: {
+					ID:   6,
+					Name: "#1-4",
 				},
 			},
 		},
@@ -58,8 +108,14 @@ func TestBattleController_CreateBattle(t *testing.T) {
 			Defense:      4,
 			CriticalOdds: 20,
 			CriticalLoss: 200,
-			Health:       90,
+			Health:       180,
 			Speed:        11,
+			Skills: map[int]storage.SkillMeta{
+				0: {
+					ID:   1,
+					Name: "Normal Attack",
+				},
+			},
 		},
 	}, nil)
 
@@ -77,5 +133,8 @@ func TestBattleController_CreateBattle(t *testing.T) {
 
 	body, err := io.ReadAll(resp.Body)
 	assert.NoError(t, err)
-	assert.JSONEq(t, `{"winner":"Left"}`, string(body))
+
+	var v any
+	assert.NoError(t, json.Unmarshal(body, &v))
+	assert.NoError(t, sch.Validate(v))
 }

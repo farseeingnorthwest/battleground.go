@@ -1,0 +1,375 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/farseeingnorthwest/battleground.go/controller/battle.schema.json",
+  "title": "Battle",
+  "type": "object",
+  "properties": {
+    "winner": { "$ref": "#/$defs/side" },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/profile"
+      }
+    },
+    "start": { "$ref": "#/$defs/act" },
+    "rounds": {
+      "type": "array",
+      "items": {
+        "title": "Round",
+        "type": "object",
+        "properties": {
+          "profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/profile"
+            }
+          },
+          "start": { "$ref": "#/$defs/act" },
+          "main": { "$ref": "#/$defs/act" },
+          "end": { "$ref": "#/$defs/act" }
+        },
+        "required": ["profiles"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["winner", "profiles", "start", "rounds"],
+  "additionalProperties": false,
+  "$defs": {
+    "side": {
+      "enum": ["Left", "Right"]
+    },
+    "signal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string",
+          "enum": [
+            "battle_start",
+            "round_start",
+            "round_end",
+            "pre_action",
+            "post_action",
+            "launch",
+            "lifecycle"
+          ]
+        },
+        "action": {
+          "type": "integer"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "lifecycle": {
+      "type": "object",
+      "properties": {
+        "leading": {
+          "type": "integer"
+        },
+        "cooling": {
+          "type": "integer"
+        },
+        "capacity": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "lifecycle_signal": {
+      "allOf": [{ "$ref": "#/$defs/signal" }],
+      "properties": {
+        "id": true,
+        "name": {
+          "enum": ["lifecycle"]
+        },
+        "parent": {
+          "$ref": "#/$defs/signal"
+        },
+        "warrior": {
+          "$ref": "#/$defs/warrior"
+        },
+        "reactor": {
+          "$ref": "#/$defs/reactor"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/lifecycle"
+        },
+        "affairs": {
+          "type": "array",
+          "items": {
+            "enum": ["Trigger", "Overflow"]
+          }
+        }
+      },
+      "required": ["parent", "reactor"],
+      "additionalProperties": false
+    },
+    "reactor": {
+      "type": "string"
+    },
+    "reactor_state": {
+      "type": "object",
+      "properties": {
+        "reactor": {
+          "$ref": "#/$defs/reactor"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/lifecycle"
+        }
+      },
+      "required": ["reactor", "lifecycle"],
+      "additionalProperties": false
+    },
+    "warrior": {
+      "type": "object",
+      "properties": {
+        "side": {
+          "$ref": "#/$defs/side"
+        },
+        "position": {
+          "type": "integer"
+        }
+      },
+      "required": ["side", "position"],
+      "additionalProperties": false
+    },
+    "health": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer"
+        },
+        "maximum": {
+          "type": "integer"
+        }
+      },
+      "required": ["current", "maximum"],
+      "additionalProperties": false
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "warrior": {
+          "$ref": "#/$defs/warrior"
+        },
+        "health": {
+          "$ref": "#/$defs/health"
+        },
+        "damage": {
+          "type": "integer"
+        },
+        "defense": {
+          "type": "integer"
+        },
+        "critical_odds": {
+          "type": "integer"
+        },
+        "critical_loss": {
+          "type": "integer"
+        },
+        "speed": {
+          "type": "integer"
+        },
+        "reactors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reactor_state"
+          }
+        }
+      }
+    },
+    "evolution": {
+      "type": "object",
+      "properties": {
+        "warrior": {
+          "$ref": "#/$defs/warrior"
+        },
+        "health": {
+          "$ref": "#/$defs/health"
+        },
+        "value": {
+          "type": "integer"
+        }
+      },
+      "required": ["warrior", "health", "value"],
+      "additionalProperties": false
+    },
+    "provision": {
+      "type": "object",
+      "properties": {
+        "warrior": {
+          "$ref": "#/$defs/warrior"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/lifecycle"
+        }
+      },
+      "required": ["warrior", "lifecycle"],
+      "additionalProperties": false
+    },
+    "action": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "signal": {
+              "$ref": "#/$defs/signal"
+            },
+            "warrior": {
+              "$ref": "#/$defs/warrior"
+            },
+            "reactor": {
+              "$ref": "#/$defs/reactor"
+            }
+          },
+          "required": ["reactor"],
+          "additionalProperties": false
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/warrior"
+          }
+        },
+        "false_targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/warrior"
+          }
+        },
+        "immune_targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/warrior"
+          }
+        },
+        "verb": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/attack"
+            },
+            {
+              "$ref": "#/$defs/heal"
+            },
+            {
+              "$ref": "#/$defs/buff"
+            },
+            {
+              "$ref": "#/$defs/purge"
+            }
+          ]
+        }
+      },
+      "required": ["id", "source", "targets"]
+    },
+    "attack": {
+      "type": "object",
+      "properties": {
+        "_verb": {
+          "const": "attack"
+        },
+        "critical": {
+          "type": "boolean"
+        },
+        "losses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evolution"
+          }
+        }
+      },
+      "required": ["_verb", "critical", "losses"],
+      "additionalProperties": false
+    },
+    "heal": {
+      "type": "object",
+      "properties": {
+        "_verb": {
+          "const": "heal"
+        },
+        "rises": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evolution"
+          }
+        }
+      },
+      "required": ["_verb", "rises"],
+      "additionalProperties": false
+    },
+    "buff": {
+      "type": "object",
+      "properties": {
+        "_verb": {
+          "const": "buff"
+        },
+        "reactor": {
+          "$ref": "#/$defs/reactor"
+        },
+        "provisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/provision"
+          }
+        },
+        "overflows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/provision"
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "purge": {
+      "type": "object",
+      "properties": {
+        "_verb": {
+          "const": "purge"
+        },
+        "recycles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "warrior": {
+                "$ref": "#/$defs/warrior"
+              },
+              "reactors": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/reactor_state"
+                }
+              }
+            },
+            "required": ["warrior", "reactor"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["recycles"],
+      "additionalProperties": false
+    },
+    "act": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/lifecycle_signal"
+          },
+          {
+            "$ref": "#/$defs/action"
+          }
+        ]
+      }
+    }
+  }
+}

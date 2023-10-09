@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/alecthomas/kong v0.8.0
-	github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20230927081049-5ff99c812291
+	github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20231009031630-e041c743d958
 	github.com/go-testfixtures/testfixtures v2.5.1+incompatible
 	github.com/gofiber/fiber/v2 v2.49.2
 	github.com/jmoiron/sqlx v1.3.5
@@ -29,6 +29,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.49.0 // indirect
