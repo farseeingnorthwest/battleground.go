@@ -267,7 +267,7 @@
           ]
         }
       },
-      "required": ["id", "source", "targets"]
+      "required": ["id", "source", "targets", "verb"]
     },
     "attack": {
       "type": "object",
@@ -326,7 +326,7 @@
           }
         }
       },
-      "required": [],
+      "required": ["_verb", "reactor", "provisions"],
       "additionalProperties": false
     },
     "purge": {

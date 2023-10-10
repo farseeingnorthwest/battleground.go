@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 
+	"github.com/farseeingnorthwest/playground/battlefield/v2"
+	"github.com/farseeingnorthwest/playground/battlefield/v2/examples"
+
 	"github.com/alecthomas/kong"
 	"github.com/farseeingnorthwest/battleground.go/controller"
 	"github.com/farseeingnorthwest/battleground.go/storage"
@@ -75,6 +78,7 @@ func NewFiberApp(params FiberAppParams, lc fx.Lifecycle) *fiber.App {
 
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
+			battlefield.RegisterTagType("element", examples.Element(0))
 			go func() {
 				if err := app.Listen(params.Addr); err != nil {
 					log.Error(err)

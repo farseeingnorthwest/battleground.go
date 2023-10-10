@@ -47,9 +47,15 @@ func (c BattleController) CreateBattle(fc *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+
+	rng := battlefield.JustRng{}
+	if form.Seed != 0 {
+		rand.New(rand.NewSource(form.Seed))
+	}
+
 	ob := newObserver()
 	f := battlefield.NewBattleField(
-		rand.New(rand.NewSource(form.Seed)),
+		rng,
 		append(left, right...),
 		append(
 			functional.MapSlice(
