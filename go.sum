@@ -26,6 +26,8 @@ github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20231008105937-eb
 github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20231008105937-eb9985c2a2e5/go.mod h1:qTU06qfYOiFXwFXJQ4Z3ForDAXnGSXm3AZqkBDbqzQ4=
 github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20231009031630-e041c743d958 h1:PCgocTuIXXggrr1XgV0x4masO4sh6vsTstMACdP9SJk=
 github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20231009031630-e041c743d958/go.mod h1:qTU06qfYOiFXwFXJQ4Z3ForDAXnGSXm3AZqkBDbqzQ4=
+github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20231027083326-97e3db1aff2c h1:e1wyobLdQhJ2TZKHcrXqtA0sdDJDuuyW8Q+CJaIrcE0=
+github.com/farseeingnorthwest/playground/battlefield/v2 v2.0.0-20231027083326-97e3db1aff2c/go.mod h1:qTU06qfYOiFXwFXJQ4Z3ForDAXnGSXm3AZqkBDbqzQ4=
 github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/go-testfixtures/testfixtures v2.5.1+incompatible h1:IBJp7NQjfdUHc4+gDH0j1e76LilPeMZuvm/oEUhDwxo=

@@ -25,10 +25,11 @@ func (c BattleController) Mount(router fiber.Router) {
 
 func (c BattleController) CreateBattle(fc *fiber.Ctx) error {
 	form := struct {
-		Seed   int64
-		Left   map[int]int
-		Right  map[int]int
-		Ground []int
+		Seed     int64
+		Left     map[int]int
+		Right    map[int]int
+		Ground   []int
+		Deadline int
 	}{}
 	if err := fc.BodyParser(&form); err != nil {
 		return err
@@ -54,20 +55,20 @@ func (c BattleController) CreateBattle(fc *fiber.Ctx) error {
 	}
 
 	ob := newObserver()
-	f := battlefield.NewBattleField(
-		rng,
-		append(left, right...),
-		append(
-			functional.MapSlice(
-				func(id int) battlefield.Reactor {
-					return skills[id].Reactor.Spawn()
-				},
-				form.Ground,
-			),
-			ob,
-			newObserverComplete(ob),
-		)...,
-	)
+	deadline := form.Deadline
+	if deadline <= 0 {
+		deadline = 2 << 15
+	}
+	opts := []battlefield.Option{
+		battlefield.Deadline(deadline),
+		battlefield.FieldReactor(ob),
+		battlefield.FieldReactor(newObserverComplete(ob)),
+	}
+	for _, id := range form.Ground {
+		opts = append(opts, battlefield.FieldReactor(skills[id].Reactor.Spawn()))
+	}
+
+	f := battlefield.NewBattleField(rng, append(left, right...), opts...)
 	f.Run()
 
 	return fc.JSON(ob)
@@ -141,7 +142,15 @@ func (o *observer) React(signal battlefield.Signal, ec battlefield.EvaluationCon
 	case *battlefield.PostActionSignal:
 		o.top().appendAction(signal.Action())
 		if _, source, _ := signal.Action().Script().Source(); source != nil {
-			o.winner = source.(battlefield.Warrior)
+			warrior := source.(battlefield.Warrior)
+			for _, w := range ec.Warriors() {
+				if w.Side() != warrior.Side() && w.Health().Current > 0 {
+					warrior = nil
+					break
+				}
+			}
+
+			o.winner = warrior
 		}
 	}
 }
@@ -156,12 +165,16 @@ func (o *observer) MarshalJSON() ([]byte, error) {
 		start = act{}
 	}
 
-	return json.Marshal(map[string]any{
-		"winner":   o.winner.Side().String(),
+	v := map[string]any{
 		"profiles": o.rounds[0].profiles,
 		"start":    start,
 		"rounds":   o.rounds[1:],
-	})
+	}
+	if o.winner != nil {
+		v["winner"] = o.winner.Side().String()
+	}
+
+	return json.Marshal(v)
 }
 
 type observerComplete struct {

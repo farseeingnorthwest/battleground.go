@@ -33,7 +33,7 @@
       }
     }
   },
-  "required": ["winner", "profiles", "start", "rounds"],
+  "required": ["profiles", "start", "rounds"],
   "additionalProperties": false,
   "$defs": {
     "side": {
